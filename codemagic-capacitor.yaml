@@ -1,0 +1,106 @@
+workflows:
+  inventory-android:
+    name: Inventory Android Build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    environment:
+      node: 20
+      java: 17
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play
+
+    cache:
+      cache_paths:
+        - $CM_BUILD_DIR/inventory-app/node_modules
+        - $HOME/.gradle/caches
+
+    scripts:
+      - name: Install Node dependencies
+        script: |
+          npm install -g @capacitor/cli
+
+      - name: Build App
+        script: |
+          chmod +x build-capacitor.sh
+          ./build-capacitor.sh
+
+      - name: Build Android APK
+        script: |
+          cd inventory-app/android
+          ./gradlew assembleRelease
+
+      - name: Sign APK (if keystore configured)
+        script: |
+          echo "APK built at:"
+          find inventory-app/android/app/build/outputs -name "*.apk" -o -name "*.aab"
+
+    artifacts:
+      - inventory-app/android/app/build/outputs/**/*.apk
+      - inventory-app/android/app/build/outputs/**/*.aab
+
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+
+      # Optional: Upload to Google Play
+      # google_play:
+      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+      #   track: internal
+      #   submit_as_draft: true
+
+  inventory-ios:
+    name: Inventory iOS Build
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    environment:
+      node: 20
+      xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.yourcompany.inventory
+
+    scripts:
+      - name: Install dependencies
+        script: |
+          npm install -g @capacitor/cli
+
+      - name: Build App
+        script: |
+          chmod +x build-capacitor.sh
+          ./build-capacitor.sh
+
+      - name: Build iOS
+        script: |
+          cd inventory-app/ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -configuration Release \
+            -archivePath $PWD/build/App.xcarchive \
+            archive
+
+      - name: Export IPA
+        script: |
+          xcodebuild -exportArchive \
+            -archivePath inventory-app/ios/App/build/App.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath $PWD/build
+
+    artifacts:
+      - inventory-app/ios/App/build/*.ipa
+
+    publishing:
+      email:
+        recipients:
+          - user@example.com
+
+      # Optional: Upload to App Store
+      # app_store_connect:
+      #   api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+      #   key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+      #   issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+      #   submit_to_testflight: true
