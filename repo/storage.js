@@ -350,46 +350,10 @@ const ImageStorage = {
 // ==================== DEMO DATA ====================
 
 function initDemoData() {
-    if (!localStorage.getItem('entities')) {
-        Storage.getEntities();
-    }
-
-    if (!localStorage.getItem('categories')) {
-        Storage.getCategories();
-    }
-
-    if (Storage.getProducts().length === 0) {
-        const demoProducts = [
-            { 
-                id: '1', name: 'لابتوب Dell', code: 'LAP-001', 
-                categoryId: 'cat1', category: 'إلكترونيات',
-                stock: 5, minStock: 2, unitPrice: 3500,
-                entityStock: { entity1: 3, entity3: 2 }
-            },
-            { 
-                id: '2', name: 'ماوس لاسلكي', code: 'MOU-001', 
-                categoryId: 'cat2', category: 'إكسسوارات',
-                stock: 20, minStock: 5, unitPrice: 120,
-                entityStock: { entity1: 10, entity2: 5, entity5: 8 }
-            },
-            { 
-                id: '3', name: 'كيبورد ميكانيكي', code: 'KEY-001', 
-                categoryId: 'cat2', category: 'إكسسوارات',
-                stock: 3, minStock: 3, unitPrice: 450,
-                entityStock: { entity2: 2 }
-            },
-            { 
-                id: '4', name: 'شاشة 27 بوصة', code: 'MON-001', 
-                categoryId: 'cat1', category: 'إلكترونيات',
-                stock: 1, minStock: 2, unitPrice: 2100,
-                entityStock: { entity4: 1 }
-            },
-            { 
-                id: '5', name: 'سماعات رأس', code: 'HEA-001', 
-                categoryId: 'cat2', category: 'إكسسوارات',
-                stock: 12, minStock: 5, unitPrice: 280,
-                entityStock: { entity1: 5, entity6: 4, entity7: 3 }
-            }
+  function initDemoData() {
+    // بيانات الديمو متعطلة - نظام فاضي
+    return;
+}
         ];
         localStorage.setItem('products', JSON.stringify(demoProducts));
     }
