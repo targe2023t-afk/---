@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معاينة - نظام العهد والجهات والأقسام</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #f3f4f6;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --purple: #8b5cf6;
+            --dark: #1f2937;
+            --gray: #6b7280;
+            --gray-light: #f3f4f6;
+            --white: #ffffff;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            padding-top: 40px;
+            padding-bottom: 80px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-header h1 { font-size: 1.5rem; color: var(--dark); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .stat-card .stat-icon {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 1.25rem;
+        }
+        .stat-card .stat-icon.blue { background: var(--primary-light); color: var(--primary); }
+        .stat-card .stat-icon.green { background: #d1fae5; color: var(--success); }
+        .stat-card .stat-icon.orange { background: #fef3c7; color: var(--warning); }
+        .stat-card .stat-icon.red { background: #fee2e2; color: var(--danger); }
+        .stat-card .stat-icon.purple { background: #ede9fe; color: var(--purple); }
+        .stat-card .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--dark); }
+        .stat-card .stat-label { font-size: 0.875rem; color: var(--gray); }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        .card-title {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-item {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .list-item-info h4 { font-size: 1rem; color: var(--dark); margin-bottom: 4px; }
+        .list-item-info p { font-size: 0.875rem; color: var(--gray); }
+        .list-item-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-in { background: #d1fae5; color: var(--success); }
+        .badge-out { background: #fee2e2; color: var(--danger); }
+        .badge-transfer { background: var(--primary-light); color: var(--primary); }
+        .badge-return { background: #fef3c7; color: var(--warning); }
+        .badge-consume { background: #ede9fe; color: var(--purple); }
+
+        .movement-item {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+        }
+        .movement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        .movement-header h4 { font-size: 1rem; }
+        .movement-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .movement-detail {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        .movement-detail i { color: var(--primary); width: 16px; }
+        .movement-images {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .movement-image {
+            position: relative;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 4/3;
+        }
+        .movement-image-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.7);
+            color: var(--white);
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+        .no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: var(--gray-light);
+            color: var(--gray);
+            font-size: 0.75rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .product-image {
+            width: 60px; height: 60px;
+            border-radius: var(--radius-sm);
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .product-image i { font-size: 1.5rem; color: var(--primary); }
+        .product-info { flex: 1; }
+        .product-info h4 { font-size: 1rem; margin-bottom: 4px; }
+        .product-info p { font-size: 0.875rem; color: var(--gray); }
+        .product-stock { text-align: center; }
+        .product-stock .stock-value { font-size: 1.25rem; font-weight: bold; }
+        .product-stock .stock-label { font-size: 0.75rem; color: var(--gray); }
+        .stock-low { color: var(--danger); }
+        .stock-normal { color: var(--success); }
+
+        .entities-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .entity-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            cursor: pointer;
+        }
+        .entity-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+        }
+        .entity-icon i { font-size: 1.5rem; color: var(--primary); }
+        .entity-info h4 { font-size: 1rem; margin-bottom: 4px; }
+        .entity-info p { font-size: 0.875rem; color: var(--gray); }
+        .entity-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-light);
+        }
+        .entity-stat { text-align: center; }
+        .entity-stat .stat-num { display: block; font-size: 1.25rem; font-weight: bold; color: var(--dark); }
+        .entity-stat .stat-label { font-size: 0.75rem; color: var(--gray); }
+
+        .entity-mini-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .entity-mini-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--gray-light);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+        }
+        .entity-mini-info h4 { font-size: 0.95rem; margin-bottom: 2px; }
+        .entity-mini-info p { font-size: 0.8rem; color: var(--gray); }
+        .entity-mini-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .filter-tab {
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            background: var(--white);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--gray);
+        }
+        .filter-tab.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .chip {
+            padding: 8px 16px;
+            border: 2px solid #e5e7eb;
+            background: var(--white);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            color: var(--gray);
+        }
+        .chip.active {
+            background: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .report-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        .report-section h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .report-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        .report-row:last-child { border-bottom: none; }
+        .report-row .label { color: var(--gray); font-size: 0.875rem; }
+        .report-row .value { font-weight: 500; color: var(--dark); }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            background: var(--white);
+        }
+        .search-bar i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state h3 { font-size: 1.125rem; margin-bottom: 8px; }
+        .empty-state p { font-size: 0.875rem; }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-radius: 0 0 32px 32px;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--gray);
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.7rem;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .nav-item i { font-size: 1.1rem; }
+        .nav-item.active, .nav-item:hover { color: var(--primary); }
+        .nav-item.active { background: var(--primary-light); }
+
+        .btn-fab {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: var(--white);
+            width: 100%;
+            max-height: 85vh;
+            border-radius: var(--radius) var(--radius) 0 0;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-light);
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            z-index: 1;
+        }
+        .modal-header h3 { font-size: 1.125rem; }
+        .close-btn {
+            background: none; border: none;
+            font-size: 1.5rem;
+            color: var(--gray);
+            cursor: pointer;
+            width: 32px; height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            padding: 0 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.875rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            padding: 20px;
+            padding-top: 0;
+        }
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-secondary { background: var(--gray-light); color: var(--dark); }
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            width: auto;
+            display: inline-flex;
+        }
+
+        .file-upload {
+            position: relative;
+            border: 2px dashed #d1d5db;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            min-height: 120px;
+        }
+        .upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 20px;
+            cursor: pointer;
+            color: var(--gray);
+            gap: 8px;
+        }
+        .upload-placeholder i { font-size: 1.75rem; }
+        .upload-placeholder span { font-size: 0.8rem; text-align: center; }
+
+        .image-viewer {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .image-viewer.active { display: flex; }
+        .image-viewer img {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: var(--radius-sm);
+        }
+        .viewer-info {
+            margin-top: 16px;
+            text-align: center;
+        }
+        .viewer-info p { color: var(--white); font-size: 1rem; }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 8px 20px;
+            border: 2px solid var(--primary);
+            background: var(--white);
+            color: var(--primary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        .demo-invoice-1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            height: 100%;
+        }
+        .demo-invoice-2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: bold;
+            height: 100%;
+        }
+
+        .categories-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow);
+        }
+        .category-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-light);
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-icon.danger {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+
+    <h1 class="preview-title">📱 نظام العهد - الأصناف والجهات والأقسام</h1>
+
+    <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showPage('dashboard')">🏠 الرئيسية</button>
+        <button class="tab-btn" onclick="showPage('products')">📦 الأصناف</button>
+        <button class="tab-btn" onclick="showPage('movements')">🔄 الحركات</button>
+        <button class="tab-btn" onclick="showPage('entities')">🏢 الجهات</button>
+        <button class="tab-btn" onclick="showPage('settings')">⚙️ الإعدادات</button>
+        <button class="tab-btn" onclick="showPage('modal')">➕ نموذج الحركة</button>
+    </div>
+
+    <div class="phone-frame">
+        <div class="phone-screen">
+            <div class="notch"></div>
+
+            <!-- ===== DASHBOARD PAGE ===== -->
+            <div class="page-section active" id="page-dashboard">
+                <div class="app-content">
+                    <div class="page-header">
+                        <h1>لوحة التحكم</h1>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">الأصناف</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fas fa-warehouse"></i></div>
+                            <div class="stat-value">41</div>
+                            <div class="stat-label">المخزن الرئيسي</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple"><i class="fas fa-hand-holding"></i></div>
+                            <div class="stat-value">27</div>
+                            <div class="stat-label">العهدة في الجهات</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fas fa-gavel"></i></div>
+                            <div class="stat-value">1</div>
+                            <div class="stat-label">مزادات</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><i class="fas fa-hand-holding"></i> توزيع العهدة في الجهات</div>
+                        <div class="entity-mini-list">
+                            <div class="entity-mini-item">
+                                <div class="entity-mini-info">
+                                    <h4>جهة 1</h4>
+                                    <p>3 أصناف | 18 وحدة</p>
+                                </div>
+                                <span class="entity-mini-badge">1 مزاد</span>
+                            </div>
+                            <div class="entity-mini-item">
+                                <div class="entity-mini-info">
+                                    <h4>جهة 2</h4>
+                                    <p>2 صنف | 7 وحدات</p>
+                                </div>
+                                <span class="entity-mini-badge">0 مزاد</span>
+                            </div>
+                            <div class="entity-mini-item">
+                                <div class="entity-mini-info">
+                                    <h4>جهة 3</h4>
+                                    <p>1 صنف | 2 وحدة</p>
+                                </div>
+                                <span class="entity-mini-badge">0 مزاد</span>
+                            </div>
+                            <div class="entity-mini-item">
+                                <div class="entity-mini-info">
+                                    <h4>جهة 4</h4>
+                                    <p>1 صنف | 1 وحدة</p>
+                                </div>
+                                <span class="entity-mini-badge">0 مزاد</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title"><i class="fas fa-clock"></i> آخر الحركات</div>
+                        <div class="list-item">
+                            <div class="list-item-info">
+                                <h4>ماوس لاسلكي</h4>
+                                <p>2024-06-13 | AUC-2024-001</p>
+                                <p style="font-size:0.75rem;color:#8b5cf6"><i class="fas fa-hand-holding"></i> جهة 1</p>
+                            </div>
+                            <span class="list-item-badge badge-consume"><i class="fas fa-gavel"></i> 2</span>
+                        </div>
+                        <div class="list-item">
+                            <div class="list-item-info">
+                                <h4>لابتوب Dell</h4>
+                                <p>2024-06-12 | TRF-2024-001</p>
+                                <p style="font-size:0.75rem;color:#2563eb"><i class="fas fa-arrow-left"></i> جهة 1</p>
+                            </div>
+                            <span class="list-item-badge badge-transfer"><i class="fas fa-exchange-alt"></i> 3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PRODUCTS PAGE (الأصناف) ===== -->
+            <div class="page-section" id="page-products">
+                <div class="app-content">
+                    <div class="page-header">
+                        <h1>الأصناف</h1>
+                    </div>
+
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="ابحث عن صنف...">
+                    </div>
+
+                    <div class="filter-chips">
+                        <button class="chip active">الكل</button>
+                        <button class="chip">إلكترونيات</button>
+                        <button class="chip">إكسسوارات</button>
+                        <button class="chip">أثاث مكتبي</button>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image"><i class="fas fa-laptop"></i></div>
+                        <div class="product-info">
+                            <h4>لابتوب Dell</h4>
+                            <p>LAP-001 | إلكترونيات</p>
+                            <p style="font-size:0.75rem;color:#2563eb;margin-top:2px">
+                                <i class="fas fa-hand-holding"></i> عهدة في الجهات: 5
+                            </p>
+                        </div>
+                        <div class="product-stock">
+                            <div class="stock-value stock-normal">5</div>
+                            <div class="stock-label">الرئيسي</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image"><i class="fas fa-mouse"></i></div>
+                        <div class="product-info">
+                            <h4>ماوس لاسلكي</h4>
+                            <p>MOU-001 | إكسسوارات</p>
+                            <p style="font-size:0.75rem;color:#2563eb;margin-top:2px">
+                                <i class="fas fa-hand-holding"></i> عهدة في الجهات: 23
+                            </p>
+                        </div>
+                        <div class="product-stock">
+                            <div class="stock-value stock-normal">20</div>
+                            <div class="stock-label">الرئيسي</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image"><i class="fas fa-keyboard"></i></div>
+                        <div class="product-info">
+                            <h4>كيبورد ميكانيكي</h4>
+                            <p>KEY-001 | إكسسوارات</p>
+                            <p style="font-size:0.75rem;color:#2563eb;margin-top:2px">
+                                <i class="fas fa-hand-holding"></i> عهدة في الجهات: 2
+                            </p>
+                        </div>
+                        <div class="product-stock">
+                            <div class="stock-value stock-low">3</div>
+                            <div class="stock-label">منخفض!</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image"><i class="fas fa-desktop"></i></div>
+                        <div class="product-info">
+                            <h4>شاشة 27 بوصة</h4>
+                            <p>MON-001 | إلكترونيات</p>
+                            <p style="font-size:0.75rem;color:#2563eb;margin-top:2px">
+                                <i class="fas fa-hand-holding"></i> عهدة في الجهات: 1
+                            </p>
+                        </div>
+                        <div class="product-stock">
+                            <div class="stock-value stock-low">1</div>
+                            <div class="stock-label">منخفض!</div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image"><i class="fas fa-headphones"></i></div>
+                        <div class="product-info">
+                            <h4>سماعات رأس</h4>
+                            <p>HEA-001 | إكسسوارات</p>
+                            <p style="font-size:0.75rem;color:#2563eb;margin-top:2px">
+                                <i class="fas fa-hand-holding"></i> عهدة في الجهات: 12
+                            </p>
+                        </div>
+                        <div class="product-stock">
+                            <div class="stock-value stock-normal">12</div>
+                            <div class="stock-label">الرئيسي</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-fab"><i class="fas fa-plus"></i></button>
+            </div>
+
+            <!-- ===== MOVEMENTS PAGE ===== -->
+            <div class="page-section" id="page-movements">
+                <div class="app-content">
+                    <div class="page-header">
+                        <h1>حركات المخزون</h1>
+                    </div>
+
+                    <div class="filter-tabs">
+                        <button class="filter-tab active">الكل</button>
+                        <button class="filter-tab">استلام</button>
+                        <button class="filter-tab">توزيع</button>
+                        <button class="filter-tab">مزادات</button>
+                    </div>
+
+                    <!-- Movement: Consume (Auction) -->
+                    <div class="movement-item">
+                        <div class="movement-header">
+                            <div>
+                                <h4>ماوس لاسلكي</h4>
+                                <p style="font-size:0.8rem;color:#8b5cf6;margin-top:4px">
+                                    <i class="fas fa-hand-holding"></i> جهة 1 | <i class="fas fa-tag"></i> 150 ر.س
+                                </p>
+                            </div>
+                            <span class="list-item-badge badge-consume"><i class="fas fa-gavel"></i> 2</span>
+                        </div>
+                        <div class="movement-details">
+                            <div class="movement-detail"><i class="fas fa-calendar"></i><span>2024-06-13</span></div>
+                            <div class="movement-detail"><i class="fas fa-hashtag"></i><span>AUC-2024-001</span></div>
+                            <div class="movement-detail"><i class="fas fa-box"></i><span>استهلاك (مزاد)</span></div>
+                            <div class="movement-detail"><i class="fas fa-clock"></i><span>13 يونيو</span></div>
+                        </div>
+                        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 12px;">
+                            <i class="fas fa-sticky-note"></i> مزاد علني
+                        </p>
+                        <div class="movement-images">
+                            <div class="movement-image" onclick="showImageViewer('فاتورة 1 - التاريخ: 2024-06-13')">
+                                <div class="demo-invoice-1">
+                                    <div style="text-align:center">
+                                        <i class="fas fa-file-invoice" style="font-size:1.5rem;margin-bottom:5px"></i><br>
+                                        فاتورة 1<br><small>التاريخ</small>
+                                    </div>
+                                </div>
+                                <div class="movement-image-label">📎 فاتورة 1 (التاريخ)</div>
+                            </div>
+                            <div class="movement-image" onclick="showImageViewer('فاتورة 2 - الرقم: AUC-2024-001')">
+                                <div class="demo-invoice-2">
+                                    <div style="text-align:center">
+                                        <i class="fas fa-receipt" style="font-size:1.5rem;margin-bottom:5px"></i><br>
+                                        فاتورة 2<br><small>الرقم المرجعي</small>
+                                    </div>
+                                </div>
+                                <div class="movement-image-label">📎 فاتورة 2 (الرقم المرجعي)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Movement: Transfer -->
+                    <div class="movement-item">
+                        <div class="movement-header">
+                            <div>
+                                <h4>لابتوب Dell</h4>
+                                <p style="font-size:0.8rem;color:#2563eb;margin-top:4px">
+                                    <i class="fas fa-arrow-left"></i> جهة 1
+                                </p>
+                            </div>
+                            <span class="list-item-badge badge-transfer"><i class="fas fa-exchange-alt"></i> 3</span>
+                        </div>
+                        <div class="movement-details">
+                            <div class="movement-detail"><i class="fas fa-calendar"></i><span>2024-06-12</span></div>
+                            <div class="movement-detail"><i class="fas fa-hashtag"></i><span>TRF-2024-001</span></div>
+                            <div class="movement-detail"><i class="fas fa-box"></i><span>توزيع عهدة</span></div>
+                            <div class="movement-detail"><i class="fas fa-clock"></i><span>12 يونيو</span></div>
+                        </div>
+                        <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 12px;">
+                            <i class="fas fa-sticky-note"></i> توزيع عهدة على جهة 1
+                        </p>
+                        <div class="movement-images">
+                            <div class="movement-image">
+                                <div class="no-image"><span>لا توجد صورة</span></div>
+                                <div class="movement-image-label">فاتورة 1 (التاريخ)</div>
+                            </div>
+                            <div class="movement-image">
+                                <div class="no-image"><span>لا توجد صورة</span></div>
+                                <div class="movement-image-label">فاتورة 2 (الرقم المرجعي)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-fab"><i class="fas fa-plus"></i></button>
+            </div>
+
+            <!-- ===== ENTITIES PAGE (الجهات) ===== -->
+            <div class="page-section" id="page-entities">
+                <div class="app-content">
+                    <div class="page-header">
+                        <h1>الجهات</h1>
+                        <button class="btn btn-primary btn-small">
+                            <i class="fas fa-edit"></i> تعديل الأسماء
+                        </button>
+                    </div>
+
+                    <div class="entities-grid">
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 1</h4>
+                                <p>3 أصناف | 18 وحدة</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">3</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">1</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 2</h4>
+                                <p>2 صنف | 7 وحدات</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">2</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 3</h4>
+                                <p>1 صنف | 2 وحدة</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">1</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 4</h4>
+                                <p>1 صنف | 1 وحدة</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">1</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 5</h4>
+                                <p>0 أصناف | 0 وحدة</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 6</h4>
+                                <p>1 صنف | 4 وحدات</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">1</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 7</h4>
+                                <p>1 صنف | 3 وحدات</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">1</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="entity-card">
+                            <div class="entity-icon"><i class="fas fa-hand-holding"></i></div>
+                            <div class="entity-info">
+                                <h4>جهة 8</h4>
+                                <p>0 أصناف | 0 وحدة</p>
+                            </div>
+                            <div class="entity-stats">
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">حركة</span>
+                                </div>
+                                <div class="entity-stat">
+                                    <span class="stat-num">0</span>
+                                    <span class="stat-label">مزاد</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== SETTINGS PAGE (الإعدادات - الأقسام) ===== -->
+            <div class="page-section" id="page-settings">
+                <div class="app-content">
+                    <div class="page-header">
+                        <h1>الإعدادات</h1>
+                    </div>
+
+                    <div class="report-section">
+                        <h3><i class="fas fa-tags"></i> الأقسام</h3>
+                        <p style="color:var(--gray);font-size:0.875rem;margin-bottom:12px;">يمكنك إضافة أو تعديل أو حذف الأقسام</p>
+
+                        <div class="categories-list">
+                            <div class="category-item">
+                                <span class="category-name">إلكترونيات</span>
+                                <div class="category-actions">
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon danger"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="category-item">
+                                <span class="category-name">إكسسوارات</span>
+                                <div class="category-actions">
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon danger"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="category-item">
+                                <span class="category-name">أثاث مكتبي</span>
+                                <div class="category-actions">
+                                    <button class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-icon danger"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top:16px;">
+                            <label>إضافة قسم جديد</label>
+                            <div style="display:flex;gap:8px;">
+                                <input type="text" placeholder="اسم القسم الجديد" style="flex:1;">
+                                <button class="btn btn-primary" style="width:auto;padding:8px 16px;">
+                                    <i class="fas fa-plus"></i> إضافة
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-section">
+                        <h3><i class="fas fa-cog"></i> إعدادات المخزون</h3>
+                        <div class="form-group">
+                            <label>الحد الأدنى للتنبيه</label>
+                            <input type="number" value="10" min="1">
+                        </div>
+                        <button class="btn btn-primary" style="width:100%;">
+                            <i class="fas fa-save"></i> حفظ الإعدادات
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MODAL PAGE ===== -->
+            <div class="page-section" id="page-modal" style="position: relative;">
+                <div class="app-content" style="opacity: 0.3; pointer-events: none;">
+                    <div class="page-header"><h1>حركات المخزون</h1></div>
+                    <div class="movement-item">
+                        <div class="movement-header">
+                            <h4>ماوس لاسلكي</h4>
+                            <span class="list-item-badge badge-consume"><i class="fas fa-gavel"></i> 2</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-overlay active" style="position: absolute;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>تسجيل حركة جديدة</h3>
+                            <button class="close-btn">&times;</button>
+                        </div>
+                        <form>
+                            <div class="form-group">
+                                <label>نوع الحركة *</label>
+                                <select>
+                                    <option>اختر نوع الحركة</option>
+                                    <option>📥 استلام (وارد للرئيسي)</option>
+                                    <option>📤 صرف (منصرف من الرئيسي)</option>
+                                    <option selected>🔄 توزيع عهدة (للجهة)</option>
+                                    <option>↩️ إرجاع عهدة (من الجهة)</option>
+                                    <option>🔨 استهلاك عهدة (مزاد)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>الصنف *</label>
+                                <select>
+                                    <option>اختر الصنف</option>
+                                    <option selected>لابتوب Dell (الرئيسي: 5)</option>
+                                    <option>ماوس لاسلكي (الرئيسي: 20)</option>
+                                    <option>كيبورد ميكانيكي (الرئيسي: 3)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>الكمية *</label>
+                                <input type="number" value="3" placeholder="أدخل الكمية">
+                            </div>
+
+                            <div class="form-group">
+                                <label>التاريخ *</label>
+                                <input type="date" value="2024-06-13">
+                            </div>
+
+                            <div class="form-group">
+                                <label>الرقم المرجعي *</label>
+                                <input type="text" value="TRF-2024-001" placeholder="مثال: TRF-2024-001">
+                            </div>
+
+                            <div class="form-group">
+                                <label>ملاحظات</label>
+                                <textarea rows="2" placeholder="ملاحظات إضافية...">توزيع عهدة على جهة 1</textarea>
+                            </div>
+
+                            <div class="form-group" style="display:block;">
+                                <label>الجهة</label>
+                                <select>
+                                    <option>اختر الجهة</option>
+                                    <option selected>جهة 1</option>
+                                    <option>جهة 2</option>
+                                    <option>جهة 3</option>
+                                    <option>جهة 4</option>
+                                    <option>جهة 5</option>
+                                    <option>جهة 6</option>
+                                    <option>جهة 7</option>
+                                    <option>جهة 8</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>صورة الفاتورة 1 (مرتبطة بالتاريخ) 📎</label>
+                                <div class="file-upload">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-camera"></i>
+                                        <span>التقط صورة أو اختر من المعرض</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>صورة الفاتورة 2 (مرتبطة بالرقم المرجعي) 📎</label>
+                                <div class="file-upload">
+                                    <div class="upload-placeholder">
+                                        <i class="fas fa-camera"></i>
+                                        <span>التقط صورة أو اختر من المعرض</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary">إلغاء</button>
+                                <button type="button" class="btn btn-primary">حفظ الحركة</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Viewer -->
+            <div class="image-viewer" id="image-viewer" onclick="hideImageViewer()">
+                <div style="width:200px;height:250px;background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);border-radius:12px;display:flex;align-items:center;justify-content:center;color:white;flex-direction:column;gap:10px;">
+                    <i class="fas fa-file-invoice" style="font-size:3rem"></i>
+                    <span style="font-size:1.2rem;font-weight:bold">فاتورة</span>
+                </div>
+                <div class="viewer-info">
+                    <p id="viewer-caption">فاتورة 1 - التاريخ: 2024-06-13</p>
+                </div>
+            </div>
+
+            <!-- Bottom Nav -->
+            <nav class="bottom-nav">
+                <a class="nav-item active" data-page="dashboard"><i class="fas fa-chart-pie"></i><span>الرئيسية</span></a>
+                <a class="nav-item" data-page="products"><i class="fas fa-boxes"></i><span>الأصناف</span></a>
+                <a class="nav-item" data-page="movements"><i class="fas fa-exchange-alt"></i><span>الحركات</span></a>
+                <a class="nav-item" data-page="entities"><i class="fas fa-hand-holding"></i><span>الجهات</span></a>
+                <a class="nav-item" data-page="settings"><i class="fas fa-cog"></i><span>الإعدادات</span></a>
+            </nav>
+        </div>
+    </div>
+
+    <p style="margin-top: 20px; color: #6b7280; font-size: 0.9rem; text-align: center; max-width: 600px;">
+        ✅ <strong>التعديلات الجديدة:</strong>
+        <br>• <strong>الأصناف</strong> بدلاً من المنتجات
+        <br>• <strong>الجهات</strong> (8 جهات قابلة لتغيير الأسماء)
+        <br>• <strong>الأقسام</strong> (قابلة للإضافة والتعديل والحذف)
+        <br>• <strong>الإعدادات</strong> صفحة مستقلة لإدارة الأقسام
+    </p>
+
+    <script>
+        function showPage(page) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+            document.getElementById('page-' + page).classList.add('active');
+            event.target.classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.page === page);
+            });
+        }
+
+        function showImageViewer(caption) {
+            document.getElementById('viewer-caption').textContent = caption;
+            document.getElementById('image-viewer').classList.add('active');
+        }
+
+        function hideImageViewer() {
+            document.getElementById('image-viewer').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

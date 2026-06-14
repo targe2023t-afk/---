@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>معاينة - محضر جرد الأصناف</title>
+    <style>
+        @page { size: A4 landscape; margin: 10mm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+        .phone-frame {
+            width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .report-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 3px double #333;
+            padding: 20px;
+            background: #1a5490;
+            color: white;
+        }
+        .report-header h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        .report-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+        .category-section {
+            margin-bottom: 25px;
+            padding: 0 15px;
+        }
+        .category-title {
+            background: #4472c4;
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 0;
+            border-radius: 5px 5px 0 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        th {
+            background: #5b9bd5;
+            color: white;
+            padding: 10px 5px;
+            border: 1px solid #333;
+            text-align: center;
+            font-weight: bold;
+        }
+        td {
+            padding: 8px 5px;
+            border: 1px solid #999;
+            text-align: center;
+        }
+        td:nth-child(3), td:nth-child(4) {
+            text-align: right;
+        }
+        .col-num { width: 3%; }
+        .col-code { width: 8%; }
+        .col-name { width: 22%; }
+        .col-unit { width: 7%; }
+        .col-actual { width: 10%; background: #fff2cc; }
+        .col-status { width: 10%; background: #fff2cc; }
+        .col-ledger { width: 10%; background: #fff2cc; }
+        .col-deficit { width: 7%; background: #f8cbad; }
+        .col-surplus { width: 7%; background: #c6e0b4; }
+        .col-price { width: 8%; background: #fff2cc; }
+        .col-value { width: 8%; background: #fff2cc; }
+
+        .total-row {
+            background: #d9e1f2 !important;
+            font-weight: bold;
+        }
+        .total-row td {
+            border-top: 2px solid #333;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .signatures {
+            margin: 40px 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+        .signature-box {
+            text-align: center;
+            width: 200px;
+        }
+        .signature-line {
+            border-top: 1px solid #333;
+            margin-top: 30px;
+            padding-top: 5px;
+        }
+        .preview-label {
+            text-align: center;
+            padding: 10px;
+            background: #f59e0b;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-label">📄 معاينة - شكل تقرير الجرد عند الطباعة</div>
+
+    <div class="phone-frame">
+        <div class="report-header">
+            <h1>محضر جرد الأصناف</h1>
+            <div class="report-info">
+                <span>الجهة: <strong>المخزن الرئيسي</strong></span>
+                <span>تاريخ الجرد: <strong>14/06/2026</strong></span>
+                <span>الجارد: <strong>_________________</strong></span>
+            </div>
+        </div>
+
+        <!-- قسم إلكترونيات -->
+        <div class="category-section">
+            <div class="category-title">إلكترونيات</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-num">م</th>
+                        <th class="col-code">كود الصنف</th>
+                        <th class="col-name">اسم الصنف</th>
+                        <th class="col-unit">الوحدة</th>
+                        <th class="col-actual">الموجود من واقع الجرد</th>
+                        <th class="col-status">حالة الصنف</th>
+                        <th class="col-ledger">الرصيد الدفتري</th>
+                        <th class="col-deficit">العجز</th>
+                        <th class="col-surplus">الزيادة</th>
+                        <th class="col-price">سعر الوحدة</th>
+                        <th class="col-value">القيمة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>LAP-001</td>
+                        <td style="text-align:right">لابتوب Dell</td>
+                        <td>بالعدد</td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc">5</td>
+                        <td style="background:#f8cbad"></td>
+                        <td style="background:#c6e0b4"></td>
+                        <td style="background:#fff2cc">3500</td>
+                        <td style="background:#fff2cc"></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>MON-001</td>
+                        <td style="text-align:right">شاشة 27 بوصة</td>
+                        <td>بالعدد</td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc">1</td>
+                        <td style="background:#f8cbad"></td>
+                        <td style="background:#c6e0b4"></td>
+                        <td style="background:#fff2cc">2100</td>
+                        <td style="background:#fff2cc"></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="4" style="text-align:center">إجمالي إلكترونيات</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- قسم إكسسوارات -->
+        <div class="category-section">
+            <div class="category-title">إكسسوارات</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-num">م</th>
+                        <th class="col-code">كود الصنف</th>
+                        <th class="col-name">اسم الصنف</th>
+                        <th class="col-unit">الوحدة</th>
+                        <th class="col-actual">الموجود من واقع الجرد</th>
+                        <th class="col-status">حالة الصنف</th>
+                        <th class="col-ledger">الرصيد الدفتري</th>
+                        <th class="col-deficit">العجز</th>
+                        <th class="col-surplus">الزيادة</th>
+                        <th class="col-price">سعر الوحدة</th>
+                        <th class="col-value">القيمة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>MOU-001</td>
+                        <td style="text-align:right">ماوس لاسلكي</td>
+                        <td>بالعدد</td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc">43</td>
+                        <td style="background:#f8cbad"></td>
+                        <td style="background:#c6e0b4"></td>
+                        <td style="background:#fff2cc">120</td>
+                        <td style="background:#fff2cc"></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>KEY-001</td>
+                        <td style="text-align:right">كيبورد ميكانيكي</td>
+                        <td>بالعدد</td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc">5</td>
+                        <td style="background:#f8cbad"></td>
+                        <td style="background:#c6e0b4"></td>
+                        <td style="background:#fff2cc">450</td>
+                        <td style="background:#fff2cc"></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>HEA-001</td>
+                        <td style="text-align:right">سماعات رأس</td>
+                        <td>بالعدد</td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc"></td>
+                        <td style="background:#fff2cc">24</td>
+                        <td style="background:#f8cbad"></td>
+                        <td style="background:#c6e0b4"></td>
+                        <td style="background:#fff2cc">280</td>
+                        <td style="background:#fff2cc"></td>
+                    </tr>
+                    <tr class="total-row">
+                        <td colspan="4" style="text-align:center">إجمالي إكسسوارات</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="signatures">
+            <div class="signature-box">
+                <div class="signature-line">توقيع الجارد</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line">توقيع المشرف</div>
+            </div>
+            <div class="signature-box">
+                <div class="signature-line">توقيع المدير</div>
+            </div>
+        </div>
+    </div>
+
+    <p style="text-align:center; margin-top:20px; color:#666;">
+        💡 هذا هو الشكل النهائي لتقرير الجرد - اضغط على زر "تصدير تقرير الجرد" في التطبيق
+    </p>
+</body>
+</html>
